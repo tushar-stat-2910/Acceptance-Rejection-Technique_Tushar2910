@@ -1,1 +1,76 @@
 
+#NECESSARY USER DEFINED FUNCTION 
+#1)For choice of c
+choice_c=function(lamda,a=0,b=100){
+  x=seq(a,b)
+  F=exp(-lamda)*(lamda^x)/factorial(x)
+  G=1/(b-a)
+  FdevideG=F/G
+  plot(FdevideG,main="plot of F divide by G (value of c) ")
+  cat("value of c is",max(FdevideG))
+  return(max(FdevideG))
+}
+#2)For calculating Ratio
+ratio=function(x,lamda,a=0,b=100){
+  F=exp(-lamda)*(lamda^x)/factorial(x)
+  G=1/(b-a)
+  FdevideG=F/G
+  return(FdevideG)
+}
+
+#1) Truncated Poisson(2) truncated at X=0
+#program for k rn from poisson(lamda)
+lamda=5; a=0;b=100; k=200000; x=c(rep(-1,k));
+c=choice_c(lamda)
+for( i in 1:k){
+  while(x[i] <0){
+    u=trunc(runif(1,a,b));u
+    rat1=ratio(u,lamda);rat1
+    u1=runif(1)
+    if(u1<rat1/c){
+      x[i]=u
+    }
+  }
+};x
+
+#ii)Gamma(Scale=2,shape=3)
+#PROGRAM:
+scale=2; shape=3; scale1=2/3;N=10000
+f=function(x,scale,shape){
+  (scale^(shape)* exp((-scale)*x)* x^(shape-1))/gamma(shape)
+}
+g=function(x=1,scale1){
+  scale1*exp(-scale1*x)
+}
+c=f(1.5,2,3)/g(1.5,0.66);c
+x=rep(-1,N)
+for(i in 1:N){
+  while(x[i]<0){
+    y=rexp(1,2/3)
+    u=runif(1)
+    if(u<f(y,scale,shape)/(c*g(y,scale1)))
+      x[i]=y
+  }
+}; x
+
+
+#III) NORMAL(2,3)
+#PROGRAM:
+mu=2; sigma=sqrt(3);lamda=3; N=10000
+f=function(x,mu,sigma){
+  (1/sigma*sqrt(2*pi))*exp(-1/(2*sigma^2)*(x-mu)^2)
+}
+g=function(x,mu,lamda){
+  lamda/pi*1/(lamda^2+(x-mu)^2)
+}
+x=seq(-10,10,0.001); p=f(x,mu,sigma)/g(x,mu,lamda);p
+x=x[p>0.01]; p=f(x,mu,sigma)/g(x,mu,lamda);p
+c=max(p); c ; x=rep(-202837635,N)
+for(i in 1:N){
+  while(x[i]==-202837635){
+    y=rcauchy(1,mu,lamda)
+    u=runif(1)
+    if(u<f(y,mu,sigma)/(c*g(y,mu,lamda)))
+      x[i]=y
+  }
+};x; mean(x); var(x)
